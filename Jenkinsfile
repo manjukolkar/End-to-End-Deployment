@@ -1,7 +1,7 @@
 pipeline {
     agent any
     environment {
-        DOCKER_IMAGE = 'manjukolkar007/test-image'
+        DOCKER_IMAGE = 'manjukolkar007/test-image:latest'
     }
     stages {
         stage('Clone Repository') {
@@ -11,9 +11,7 @@ pipeline {
         }
         stage('Build Docker Image') {
             steps {
-                sh '''
-                docker build -t $DOCKER_IMAGE .
-                '''
+                sh 'docker build -t $DOCKER_IMAGE .'
             }
         }
         stage('Login to Docker Hub') {
@@ -30,12 +28,16 @@ pipeline {
                 sh 'docker push $DOCKER_IMAGE'
             }
         }
-        stage('Deploy to Kubernetes') {
+        stage('Kubernetes Deployment') {
             steps {
-                sh '''
-                microk8s.kubectl apply -f deploy.yaml
-                '''
+                sh 'microk8s.kubectl apply -f k8s/deployment.yaml'
+            }
+        }
+        stage('Kubernetes Ingress Setup') {
+            steps {
+                sh 'microk8s.kubectl apply -f k8s/ingress.yaml'
             }
         }
     }
 }
+

@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scroll-web
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: scroll-web
+  template:
+    metadata:
+      labels:
+        app: scroll-web
+    spec:
+      containers:
+      - name: scroll-web
+        image: manjukolkar007/test-image:latest   # Matches your Jenkinsfile image name
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: scroll-web-service
+spec:
+  selector:
+    app: scroll-web
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+  type: ClusterIP
+
